@@ -14,10 +14,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream to-background">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-sm border-b border-border">
+      <header className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-coffee-medium to-warm-orange rounded-lg">
+            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-coffee-medium to-warm-orange rounded-xl shadow-sm">
               <Coffee className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -25,7 +25,7 @@ const Index = () => {
                 Find Nearby Cafes
               </h1>
               <p className="text-sm text-muted-foreground">
-                Discover amazing coffee spots around you
+                Discover amazing coffee spots around you ☕
               </p>
             </div>
           </div>
@@ -34,24 +34,28 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
-          {/* Cafe List */}
+        <div className="grid lg:grid-cols-4 gap-6 h-[calc(100vh-160px)]">
+          {/* Cafe List Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="h-full p-4 bg-card/50 backdrop-blur-sm">
-              <CafeList 
-                selectedCafe={selectedCafe}
-                onCafeSelect={handleCafeSelect}
-              />
+            <Card className="h-full bg-card/80 backdrop-blur-sm border border-border/50 shadow-xl rounded-xl overflow-hidden">
+              <div className="p-4 h-full">
+                <CafeList 
+                  selectedCafe={selectedCafe}
+                  onCafeSelect={handleCafeSelect}
+                />
+              </div>
             </Card>
           </div>
 
           {/* Map */}
-          <div className="lg:col-span-2">
-            <Card className="h-full p-4 bg-card/50 backdrop-blur-sm">
-              <CafeMap 
-                selectedCafe={selectedCafe}
-                onCafeSelect={handleCafeSelect}
-              />
+          <div className="lg:col-span-3">
+            <Card className="h-full bg-card/80 backdrop-blur-sm border border-border/50 shadow-xl rounded-xl overflow-hidden">
+              <div className="p-4 h-full">
+                <CafeMap 
+                  selectedCafe={selectedCafe}
+                  onCafeSelect={handleCafeSelect}
+                />
+              </div>
             </Card>
           </div>
         </div>

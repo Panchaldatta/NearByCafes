@@ -14,37 +14,56 @@ const CafeList: React.FC<CafeListProps> = ({ selectedCafe, onCafeSelect }) => {
   const cafes: Cafe[] = cafesData as Cafe[];
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2 mb-4">
+    <div className="h-full flex flex-col">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border/50">
         <Coffee className="w-5 h-5 text-coffee-medium" />
         <h2 className="text-lg font-semibold text-coffee-bean">
           Nearby Cafes ({cafes.length})
         </h2>
       </div>
       
-      <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+      <div className="flex-1 space-y-3 overflow-y-auto pr-2">{/* Custom scrollbar styles */}
+        <style>{`
+          .cafe-list::-webkit-scrollbar {
+            width: 6px;
+          }
+          .cafe-list::-webkit-scrollbar-track {
+            background: hsl(var(--muted));
+            border-radius: 3px;
+          }
+          .cafe-list::-webkit-scrollbar-thumb {
+            background: hsl(var(--coffee-light));
+            border-radius: 3px;
+          }
+          .cafe-list::-webkit-scrollbar-thumb:hover {
+            background: hsl(var(--coffee-medium));
+          }
+        `}</style>
         {cafes.map((cafe) => (
           <Card
             key={cafe.id}
-            className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
+            className={`p-4 cursor-pointer transition-all duration-300 hover:shadow-md border rounded-xl ${
               selectedCafe === cafe.id 
-                ? 'ring-2 ring-warm-orange bg-accent/50' 
-                : 'hover:bg-accent/30'
+                ? 'ring-2 ring-warm-orange bg-warm-orange/10 border-warm-orange/30 shadow-lg' 
+                : 'hover:bg-accent/30 border-border/50 hover:border-coffee-light/50'
             }`}
             onClick={() => onCafeSelect?.(cafe.id)}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-coffee-bean mb-1">
-                  {cafe.name}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">☕</span>
+                  <h3 className="font-semibold text-coffee-bean">
+                    {cafe.name}
+                  </h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
                   {cafe.description}
                 </p>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-warm-orange fill-current" />
+                    <span className="text-warm-orange">⭐</span>
                     <span className="text-sm font-medium text-coffee-medium">
                       {cafe.rating}
                     </span>
@@ -52,10 +71,14 @@ const CafeList: React.FC<CafeListProps> = ({ selectedCafe, onCafeSelect }) => {
                   
                   <Badge 
                     variant="secondary" 
-                    className="text-xs bg-coffee-light/20 text-coffee-medium hover:bg-coffee-light/30"
+                    className={`text-xs transition-colors ${
+                      selectedCafe === cafe.id 
+                        ? 'bg-warm-orange/20 text-warm-orange border-warm-orange/30' 
+                        : 'bg-coffee-light/20 text-coffee-medium hover:bg-coffee-light/30'
+                    }`}
                   >
                     <MapPin className="w-3 h-3 mr-1" />
-                    View on map
+                    {selectedCafe === cafe.id ? 'Selected' : 'View on map'}
                   </Badge>
                 </div>
               </div>
