@@ -45,9 +45,10 @@ const MapController: React.FC<{
 interface CafeMapProps {
   selectedCafe?: number | null;
   onCafeSelect?: (cafeId: number) => void;
+  onLocationUpdate?: (location: [number, number]) => void;
 }
 
-const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect }) => {
+const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect, onLocationUpdate }) => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [cafes] = useState<Cafe[]>(cafesData as Cafe[]);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,35 +63,43 @@ const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect }) => {
             position.coords.longitude
           ];
           setUserLocation(coords);
+          onLocationUpdate?.(coords);
           setIsLoading(false);
         },
         (error) => {
           console.error('Error getting location:', error);
           // Fallback to San Francisco coordinates
           setUserLocation([37.7749, -122.4194]);
+          onLocationUpdate?.([37.7749, -122.4194]);
           setIsLoading(false);
         }
       );
     } else {
       // Fallback to San Francisco coordinates
       setUserLocation([37.7749, -122.4194]);
+      onLocationUpdate?.([37.7749, -122.4194]);
       setIsLoading(false);
     }
   }, []);
 
   if (isLoading || !userLocation) {
     return (
-      <Card className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <MapPin className="w-8 h-8 text-coffee-medium mx-auto mb-2 animate-pulse" />
-          <p className="text-muted-foreground">Getting your location...</p>
+      <Card className="h-full flex items-center justify-center bg-gradient-to-br from-card to-cream/50">
+        <div className="text-center animate-bounce-in">
+          <div className="w-16 h-16 bg-gradient-to-br from-coffee-medium to-warm-orange rounded-2xl flex items-center justify-center mx-auto mb-4 animate-float">
+            <MapPin className="w-8 h-8 text-white animate-pulse" />
+          </div>
+          <h3 className="text-lg font-semibold text-coffee-bean mb-2 font-display">
+            Finding your location
+          </h3>
+          <p className="text-muted-foreground">This helps us show you nearby cafes</p>
         </div>
       </Card>
     );
   }
 
   return (
-    <div className="h-full rounded-lg overflow-hidden shadow-lg">
+    <div className="h-full rounded-2xl overflow-hidden shadow-elevation animate-fade-in">
       <MapContainer
         center={userLocation}
         zoom={14}
@@ -104,9 +113,9 @@ const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect }) => {
         
         {/* User location marker */}
         <Marker position={userLocation} icon={userIcon}>
-          <Popup>
-            <div className="text-center p-2">
-              <div className="font-semibold text-coffee-bean mb-1">📍 You are here</div>
+          <Popup className="user-popup">
+            <div className="text-center p-3">
+              <div className="font-semibold text-coffee-bean mb-1 font-display">📍 You are here</div>
               <div className="text-sm text-muted-foreground">Your current location</div>
             </div>
           </Popup>
@@ -122,13 +131,16 @@ const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect }) => {
               click: () => onCafeSelect?.(cafe.id)
             }}
           >
-            <Popup>
-              <div className="p-3 min-w-[200px]">
-                <h3 className="font-semibold text-coffee-bean mb-1">{cafe.name}</h3>
-                <p className="text-sm text-muted-foreground mb-2">{cafe.description}</p>
-                <div className="flex items-center gap-1">
-                  <span className="text-warm-orange">⭐</span>
-                  <span className="text-sm font-medium text-coffee-medium">{cafe.rating}</span>
+            <Popup className="cafe-popup">
+              <div className="p-4 min-w-[220px]">
+                <h3 className="font-semibold text-coffee-bean mb-2 font-display">{cafe.name}</h3>
+                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{cafe.description}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="text-warm-orange">⭐</span>
+                    <span className="text-sm font-medium text-coffee-medium">{cafe.rating}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">☕ Open now</span>
                 </div>
               </div>
             </Popup>
