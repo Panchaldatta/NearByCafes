@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "Blue Bottle Coffee",
+    "coordinates": [-122.4081, 37.7837],
+    "description": "Artisanal coffee roasters with pour-over perfection",
+    "rating": 4.5
+  },
+  {
+    "id": 2,
+    "name": "Ritual Coffee",
+    "coordinates": [-122.4095, 37.7847],
+    "description": "Local favorite with ethically sourced beans",
+    "rating": 4.3
+  },
+  {
+    "id": 3,
+    "name": "Four Barrel Coffee",
+    "coordinates": [-122.4102, 37.7829],
+    "description": "Industrial-chic space with expertly crafted espresso",
+    "rating": 4.4
+  },
+  {
+    "id": 4,
+    "name": "Sightglass Coffee",
+    "coordinates": [-122.4088, 37.7855],
+    "description": "Third-wave coffee in a bright, modern setting",
+    "rating": 4.6
+  },
+  {
+    "id": 5,
+    "name": "Philz Coffee",
+    "coordinates": [-122.4075, 37.7825],
+    "description": "Custom-blended coffee with personalized service",
+    "rating": 4.2
+  },
+  {
+    "id": 6,
+    "name": "The Mill",
+    "coordinates": [-122.4098, 37.7863],
+    "description": "Artisan coffee and toast in a converted warehouse",
+    "rating": 4.5
+  },
+  {
+    "id": 7,
+    "name": "Andytown Coffee",
+    "coordinates": [-122.4068, 37.7819],
+    "description": "Neighborhood gem with exceptional flat whites",
+    "rating": 4.7
+  },
+  {
+    "id": 8,
+    "name": "Saint Frank Coffee",
+    "coordinates": [-122.4105, 37.7871],
+    "description": "Specialty coffee with house-made pastries",
+    "rating": 4.4
+  }
+]
