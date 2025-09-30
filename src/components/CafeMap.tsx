@@ -84,27 +84,22 @@ const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect, onLocatio
 
   if (isLoading || !userLocation) {
     return (
-      <Card className="h-full flex items-center justify-center bg-gradient-to-br from-card to-cream/50">
-        <div className="text-center animate-bounce-in">
-          <div className="w-16 h-16 bg-gradient-to-br from-coffee-medium to-warm-orange rounded-2xl flex items-center justify-center mx-auto mb-4 animate-float">
-            <MapPin className="w-8 h-8 text-white animate-pulse" />
-          </div>
-          <h3 className="text-lg font-semibold text-coffee-bean mb-2 font-display">
-            Finding your location
-          </h3>
-          <p className="text-muted-foreground">This helps us show you nearby cafes</p>
+      <div className="h-full flex items-center justify-center bg-muted/30">
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-sm text-muted-foreground">Detecting location...</p>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <div className="h-full rounded-2xl overflow-hidden shadow-elevation animate-fade-in">
+    <div className="h-full overflow-hidden">
       <MapContainer
         center={userLocation}
         zoom={14}
         className="h-full w-full"
-        zoomControl={false}
+        zoomControl={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -113,10 +108,10 @@ const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect, onLocatio
         
         {/* User location marker */}
         <Marker position={userLocation} icon={userIcon}>
-          <Popup className="user-popup">
-            <div className="text-center p-3">
-              <div className="font-semibold text-coffee-bean mb-1 font-display">📍 You are here</div>
-              <div className="text-sm text-muted-foreground">Your current location</div>
+          <Popup>
+            <div className="p-3 min-w-[180px]">
+              <div className="font-medium text-sm mb-1">Your Location</div>
+              <div className="text-xs text-muted-foreground">📍 You are here</div>
             </div>
           </Popup>
         </Marker>
@@ -131,16 +126,18 @@ const CafeMap: React.FC<CafeMapProps> = ({ selectedCafe, onCafeSelect, onLocatio
               click: () => onCafeSelect?.(cafe.id)
             }}
           >
-            <Popup className="cafe-popup">
-              <div className="p-4 min-w-[220px]">
-                <h3 className="font-semibold text-coffee-bean mb-2 font-display">{cafe.name}</h3>
-                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{cafe.description}</p>
-                <div className="flex items-center justify-between">
+            <Popup>
+              <div className="p-3 min-w-[200px]">
+                <h3 className="font-medium text-sm mb-2">{cafe.name}</h3>
+                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                  {cafe.description}
+                </p>
+                <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1">
-                    <span className="text-warm-orange">⭐</span>
-                    <span className="text-sm font-medium text-coffee-medium">{cafe.rating}</span>
+                    <span>⭐</span>
+                    <span className="font-medium">{cafe.rating}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">☕ Open now</span>
+                  <span className="text-muted-foreground">Open now</span>
                 </div>
               </div>
             </Popup>
