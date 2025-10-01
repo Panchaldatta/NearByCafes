@@ -54,5 +54,54 @@
     "coordinates": [73.8820, 18.5312],
     "description": "Heritage bakery with legendary Shrewsbury biscuits",
     "rating": 4.8
+  },
+  {
+    "id": 9,
+    "name": "Goodluck Café",
+    "coordinates": [73.8802, 18.5325],
+    "description": "Legendary Irani café with authentic bun maska",
+    "rating": 4.6
+  },
+  {
+    "id": 10,
+    "name": "Café Goodness",
+    "coordinates": [73.8818, 18.5308],
+    "description": "Health-focused café with organic coffee",
+    "rating": 4.3
+  },
+  {
+    "id": 11,
+    "name": "The Coffee House",
+    "coordinates": [73.8792, 18.5318],
+    "description": "Local favorite with cozy reading corner",
+    "rating": 4.4
+  },
+  {
+    "id": 12,
+    "name": "Café Mélange",
+    "coordinates": [73.8812, 18.5302],
+    "description": "French-inspired café with artisan pastries",
+    "rating": 4.5
+  },
+  {
+    "id": 13,
+    "name": "Third Wave Coffee",
+    "coordinates": [73.8798, 18.5314],
+    "description": "Modern specialty coffee with cold brews",
+    "rating": 4.7
+  },
+  {
+    "id": 14,
+    "name": "Café Terrace",
+    "coordinates": [73.8822, 18.5316],
+    "description": "Rooftop café with beautiful garden views",
+    "rating": 4.4
+  },
+  {
+    "id": 15,
+    "name": "Brew & Bite",
+    "coordinates": [73.8788, 18.5326],
+    "description": "Casual café with quick bites and espresso",
+    "rating": 4.2
   }
 ]

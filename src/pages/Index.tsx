@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Coffee, MapPin } from 'lucide-react';
+import { MapPin, Coffee } from 'lucide-react';
 import CafeMap from '@/components/CafeMap';
 import CafeList from '@/components/CafeList';
+import { useCafeSelection } from '@/hooks/useCafeSelection';
+import { useGeolocation } from '@/hooks/useGeolocation';
 
 const Index = () => {
-  const [selectedCafe, setSelectedCafe] = useState<number | null>(null);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-
-  const handleCafeSelect = (cafeId: number) => {
-    setSelectedCafe(selectedCafe === cafeId ? null : cafeId);
-  };
+  const { selectedCafe, handleCafeSelect } = useCafeSelection();
+  const { userLocation } = useGeolocation();
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,7 +60,7 @@ const Index = () => {
               <CafeMap 
                 selectedCafe={selectedCafe}
                 onCafeSelect={handleCafeSelect}
-                onLocationUpdate={setUserLocation}
+                onLocationUpdate={() => {}}
               />
             </Card>
           </div>

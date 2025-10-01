@@ -1,9 +1,8 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin } from 'lucide-react';
 import cafesData from '@/data/cafes.json';
 import { Cafe } from '@/types/cafe';
-import { calculateDistance, formatDistance } from '@/utils/distance';
+import { calculateDistance } from '@/utils/distance';
+import CafeCard from '@/components/CafeCard';
 
 interface CafeListProps {
   selectedCafe?: number | null;
@@ -49,55 +48,14 @@ const CafeList: React.FC<CafeListProps> = ({ selectedCafe, onCafeSelect, userLoc
               )
             : null;
 
-          const isSelected = selectedCafe === cafe.id;
-
           return (
-            <button
+            <CafeCard
               key={cafe.id}
-              className={`w-full text-left p-3 rounded-lg border transition-all duration-200 ${
-                isSelected
-                  ? 'border-primary bg-muted shadow-sm' 
-                  : 'border-border hover:border-primary/50 hover:bg-muted/50'
-              }`}
-              onClick={() => onCafeSelect?.(cafe.id)}
-            >
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="font-medium text-sm leading-tight">
-                  {cafe.name}
-                </h3>
-                {distance && (
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {formatDistance(distance)}
-                  </span>
-                )}
-              </div>
-              
-              <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                {cafe.description}
-              </p>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs">⭐</span>
-                    <span className="text-xs font-medium">
-                      {cafe.rating}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    <span className="text-xs">Open</span>
-                  </div>
-                </div>
-                
-                {isSelected && (
-                  <span className="flex items-center gap-1 text-xs text-primary">
-                    <MapPin className="w-3 h-3" />
-                    Selected
-                  </span>
-                )}
-              </div>
-            </button>
+              cafe={cafe}
+              distance={distance}
+              isSelected={selectedCafe === cafe.id}
+              onSelect={() => onCafeSelect?.(cafe.id)}
+            />
           );
         })}
       </div>
