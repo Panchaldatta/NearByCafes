@@ -23,12 +23,13 @@ A modern, interactive web application that helps users discover nearby cafes usi
 ### Core Features
 - 📍 **Real-time Location Detection**: Uses browser Geolocation API to detect user's current position
 - 🗺️ **Interactive Map**: Built with Leaflet.js and OpenStreetMap tiles
-- ☕ **Cafe Discovery**: Displays 8 nearby cafes loaded from static JSON data
+- ☕ **Cafe Discovery**: Displays 15 popular cafes near Bund Garden, Pune
 - 📌 **Custom Emoji Markers**: User location (📍) and cafe locations (☕)
 - 💬 **Interactive Popups**: Click any marker to see detailed information
 - 📋 **Synchronized Sidebar**: Cafe list that syncs with map interactions
 - 📏 **Distance Calculation**: Shows distance from user to each cafe
 - ↕️ **Smart Sorting**: Cafes automatically sorted by proximity to user
+- 🎯 **Custom Hooks**: Modular state management with reusable hooks
 
 ### Bonus Features
 - 🎨 Modern, responsive design with coffee-inspired color palette
@@ -58,9 +59,13 @@ find-nearby-cafes/
 │   ├── components/
 │   │   ├── ui/                    # shadcn/ui component library
 │   │   ├── CafeMap.tsx           # Main map component with Leaflet integration
-│   │   └── CafeList.tsx          # Sidebar cafe list component
+│   │   ├── CafeList.tsx          # Sidebar cafe list component
+│   │   └── CafeCard.tsx          # Individual cafe card component
 │   ├── data/
-│   │   └── cafes.json            # Static cafe data (coordinates, names, ratings)
+│   │   └── cafes.json            # Static cafe data (15 cafes near Bund Garden, Pune)
+│   ├── hooks/
+│   │   ├── useGeolocation.tsx    # Custom hook for user location tracking
+│   │   └── useCafeSelection.tsx  # Custom hook for cafe selection state
 │   ├── pages/
 │   │   ├── Index.tsx             # Main page component (orchestrator)
 │   │   └── NotFound.tsx          # 404 error page
@@ -111,26 +116,29 @@ find-nearby-cafes/
 ---
 
 #### `src/pages/Index.tsx` (Main Orchestrator)
-**Purpose**: Primary page component that coordinates all functionality.
+**Purpose**: Primary page component that coordinates all functionality using custom hooks.
 
-**State Management**:
+**State Management with Custom Hooks**:
 ```typescript
-const [selectedCafe, setSelectedCafe] = useState<number | null>(null);
-const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+const { selectedCafe, handleCafeSelect } = useCafeSelection();
+const { userLocation } = useGeolocation();
 ```
 
 **Key Features**:
-1. **State Coordination**: Manages shared state between map and list
-2. **Cafe Selection**: Handles which cafe is currently selected
-3. **Location Tracking**: Stores and propagates user location
+1. **Hook-Based Architecture**: Uses custom hooks for clean separation of concerns
+2. **Cafe Selection**: Managed by `useCafeSelection` hook
+3. **Location Tracking**: Managed by `useGeolocation` hook with auto-detection
 4. **Layout Structure**: Implements responsive grid layout
-   - Left sidebar (25% on desktop): `CafeList` component
-   - Right main area (75% on desktop): `CafeMap` component
+   - Left sidebar (320px on desktop): `CafeList` component
+   - Right main area (flexible): `CafeMap` component
 
-**Event Handlers**:
+**Component Integration**:
 ```typescript
-handleCafeSelect(cafeId: number) // Toggles cafe selection
-setUserLocation([lat, lng])      // Updates user location from map
+// Cafe selection from custom hook
+const { selectedCafe, handleCafeSelect } = useCafeSelection();
+
+// Automatic location detection from custom hook
+const { userLocation } = useGeolocation();
 ```
 
 **Component Tree**:
@@ -145,6 +153,76 @@ Index
 │       └── Receives: selectedCafe
 │       └── Emits: onCafeSelect, onLocationUpdate
 ```
+
+---
+
+### Custom Hooks
+
+#### `src/hooks/useGeolocation.tsx`
+**Purpose**: Custom hook for managing user location detection.
+
+**State & Effects**:
+```typescript
+export const useGeolocation = () => {
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation([
+          position.coords.longitude, 
+          position.coords.latitude
+        ]);
+        setLoading(false);
+      },
+      (err) => {
+        setError(err.message);
+        setLoading(false);
+      }
+    );
+  }, []);
+
+  return { userLocation, loading, error };
+};
+```
+
+**Benefits**:
+- Automatic location detection on mount
+- Loading and error states for better UX
+- Reusable across multiple components
+- Clean separation of location logic
+
+---
+
+#### `src/hooks/useCafeSelection.tsx`
+**Purpose**: Custom hook for managing cafe selection state.
+
+**Implementation**:
+```typescript
+export const useCafeSelection = () => {
+  const [selectedCafe, setSelectedCafe] = useState<number | null>(null);
+
+  const handleCafeSelect = (cafeId: number) => {
+    // Toggle selection: clicking same cafe deselects it
+    setSelectedCafe(selectedCafe === cafeId ? null : cafeId);
+  };
+
+  return { selectedCafe, handleCafeSelect };
+};
+```
+
+**Benefits**:
+- Encapsulates selection logic
+- Easy to test independently
+- Can be extended with additional features
+- Promotes code reusability
 
 ---
 
@@ -245,8 +323,58 @@ interface CafeMapProps {
 
 ---
 
+#### `src/components/CafeCard.tsx`
+**Purpose**: Reusable card component for displaying individual cafe information.
+
+**Props Interface**:
+```typescript
+interface CafeCardProps {
+  cafe: Cafe;                    // Cafe data object
+  distance: number | null;       // Distance from user (km)
+  isSelected: boolean;           // Selection state
+  onSelect: () => void;          // Click handler
+}
+```
+
+**Key Features**:
+```typescript
+const CafeCard: React.FC<CafeCardProps> = ({ cafe, distance, isSelected, onSelect }) => {
+  return (
+    <button
+      className={`transition-all ${
+        isSelected ? 'border-primary bg-muted' : 'hover:border-primary/50'
+      }`}
+      onClick={onSelect}
+    >
+      {/* Header with name and distance */}
+      <div className="flex justify-between">
+        <h3>{cafe.name}</h3>
+        {distance && <span>{formatDistance(distance)}</span>}
+      </div>
+      
+      {/* Description */}
+      <p>{cafe.description}</p>
+      
+      {/* Footer with rating and status */}
+      <div className="flex justify-between">
+        <div>⭐ {cafe.rating} • Open</div>
+        {isSelected && <span>📍 Selected</span>}
+      </div>
+    </button>
+  );
+};
+```
+
+**Benefits**:
+- Single Responsibility: Only renders cafe card UI
+- Fully reusable and testable
+- Accepts all data via props
+- Clean separation from list logic
+
+---
+
 #### `src/components/CafeList.tsx`
-**Purpose**: Sidebar displaying sorted list of nearby cafes.
+**Purpose**: Container component for cafe cards with sorting logic.
 
 **Key Features**:
 
@@ -267,36 +395,33 @@ const sortedCafes = userLocation
   : cafes;
 ```
 
-2. **Interactive Cards**:
+2. **Component Composition**:
 ```typescript
-<Card
-  className={`cursor-pointer transition-all ${
-    selectedCafe === cafe.id 
-      ? 'ring-2 ring-warm-orange bg-gradient-to-br scale-[1.02]' 
-      : 'hover:bg-gradient-to-br hover:shadow-lg'
-  }`}
-  onClick={() => onCafeSelect?.(cafe.id)}
->
-  {/* Cafe details */}
-</Card>
+<div className="cafe-list">
+  {sortedCafes.map((cafe) => {
+    const distance = userLocation ? calculateDistance(...) : null;
+    
+    return (
+      <CafeCard
+        key={cafe.id}
+        cafe={cafe}
+        distance={distance}
+        isSelected={selectedCafe === cafe.id}
+        onSelect={() => onCafeSelect?.(cafe.id)}
+      />
+    );
+  })}
+</div>
 ```
 
-3. **Information Display**:
-   - Cafe name with ☕ emoji
-   - Description text
-   - Rating (⭐)
-   - Distance from user (calculated in real-time)
-   - "Open now" status indicator
-   - Selection status badge
-
-4. **Custom Scrollbar**:
+3. **Custom Scrollbar Styling**:
 ```css
 .cafe-list::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 .cafe-list::-webkit-scrollbar-thumb {
-  background: hsl(var(--coffee-light));
-  border-radius: 3px;
+  background: hsl(var(--border));
+  border-radius: 2px;
 }
 ```
 
@@ -314,26 +439,32 @@ interface CafeListProps {
 ### Data & Type Files
 
 #### `src/data/cafes.json`
-**Purpose**: Static database of cafe locations and information.
+**Purpose**: Static database of cafe locations near Bund Garden, Pune.
 
 **Data Structure**:
 ```json
 [
   {
     "id": 1,
-    "name": "Blue Bottle Coffee",
-    "coordinates": [-122.4012, 37.7897],  // [longitude, latitude]
-    "description": "Artisanal coffee in a minimalist space",
-    "rating": 4.5
+    "name": "Café Coffee Day",
+    "coordinates": [73.8815, 18.5320],  // [longitude, latitude]
+    "description": "Popular coffee chain with variety of beverages",
+    "rating": 4.2
   },
-  // ... 7 more cafes
+  // ... 14 more cafes
 ]
 ```
+
+**Location Coverage**: 15 popular cafes around Bund Garden area including:
+- International chains: Starbucks, Café Coffee Day, Barista
+- Specialty roasters: Blue Tokai Coffee, Third Wave Coffee
+- Heritage cafés: Kayani Bakery, German Bakery, Goodluck Café, Vaishali
+- Local favorites: The Flour Works, Café Goodness, Brew & Bite
 
 **Fields Explained**:
 - `id`: Unique identifier for each cafe (used for selection tracking)
 - `name`: Display name of the cafe
-- `coordinates`: [longitude, latitude] array for map positioning
+- `coordinates`: [longitude, latitude] array for Pune locations
 - `description`: Short description displayed in popups and cards
 - `rating`: Numerical rating (0-5 scale)
 
