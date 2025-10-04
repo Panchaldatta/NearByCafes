@@ -17,11 +17,11 @@ const CafeList: React.FC<CafeListProps> = ({ selectedCafe, onCafeSelect, userLoc
   const sortedCafes = userLocation 
     ? [...cafes].sort((a, b) => {
         const distanceA = calculateDistance(
-          userLocation[0], userLocation[1],
+          userLocation[1], userLocation[0],
           a.coordinates[1], a.coordinates[0]
         );
         const distanceB = calculateDistance(
-          userLocation[0], userLocation[1],
+          userLocation[1], userLocation[0],
           b.coordinates[1], b.coordinates[0]
         );
         return distanceA - distanceB;
@@ -43,7 +43,7 @@ const CafeList: React.FC<CafeListProps> = ({ selectedCafe, onCafeSelect, userLoc
         {sortedCafes.map((cafe) => {
           const distance = userLocation 
             ? calculateDistance(
-                userLocation[0], userLocation[1],
+                userLocation[1], userLocation[0],
                 cafe.coordinates[1], cafe.coordinates[0]
               )
             : null;
